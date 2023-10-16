@@ -4,7 +4,17 @@ from celery import Celery
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'proj.settings')
 
-app = Celery('proj')
+app = Celery('proj',
+            broker='amqp://',
+            backend='rpc://',
+            include=['proj.tasks'])
+
+app.conf.update(
+    result_expires=3600,
+)
+
+if __name__ == '__main__':
+    app.start()
 
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
